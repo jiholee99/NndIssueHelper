@@ -4,47 +4,8 @@ import TextToUnicodeConverter from "../../util/TextToUnicodeConverter";
 import React, { useState } from 'react';
 import IssueForm from "./IssueForm";
 import PopupExample from "../popup";
-import { DynamicForm } from "./demo";
-
-const exampleSchema = {
-    title: "Example Issue Form",
-    submitLabel: "Submit",
-    fields: [
-        { id: "lotid", label: "Lot ID", type: "text", required: true, placeholder: "Enter lot ID" },
-        { id: "issue_type", label: "Issue Type", type: "select", options: [
-            { value: "vision", label: "Vision" },
-            { value: "equipment", label: "Equipment" }
-        ], required: true, placeholder: "Select issue type" },
-        { id: "equipment", label : "Equipment", type: "select", options: [
-            { value: "1-1C", label: "MI1 1-1C" },
-            { value: "1-2C", label: "MI1 1-2C" },
-            { value: "2-1C", label: "MI1 2-1C" },
-            { value: "2-2C", label: "MI1 2-2C" },
-            { value : "3-1C", label: "MI2 3-1C" },
-            { value : "3-2C", label: "MI2 3-2C" },
-            { value : "3-3C", label: "MI2 3-3C" },
-            { value : "4-1C", label: "MI2 4-1C" },
-            { value : "4-2C", label: "MI2 4-2C" },
-            { value : "4-3C", label: "MI2 4-3C" },
-
-            { value: "1-1A", label: "MI1 1-1A" },
-            { value: "1-2A", label: "MI1 1-2A" },
-            { value: "2-1A", label: "MI1 2-1A" },
-            { value: "2-2A", label: "MI1 2-2A" },
-            { value : "3-1A", label: "MI2 3-1A" },
-            { value : "3-2A", label: "MI2 3-2A" },
-            { value : "3-3A", label: "MI2 3-3A" },
-            { value : "4-1A", label: "MI2 4-1A" },
-            { value : "4-2A", label: "MI2 4-2A" },
-            { value : "4-3A", label: "MI2 4-3A" }
-        ], required: true, placeholder: "Select vision equipment" },
-        { id: "start_time", label: "Start Time", type: "datetime" },
-        { id: "end_time", label: "End Time", type: "datetime" },
-        { id: "hmi_alarm_name", label: "HMI Alarm Name", type: "text", required: true, placeholder: "Enter HMI Alarm Name" },
-        { id: "issue", label: "Issue Description", type: "textarea", required: true, placeholder: "Describe the issue" },
-        { id: "solution", label: "Proposed Solution", type: "textarea", required: true, placeholder: "Describe the proposed solution" },
-    ]
-};
+import { DynamicForm } from "../../components/DynamicForm";
+import visionIssueSchema from "../../model/VisionIssueSchema";
 
 const keyNameMap = {
     lotid: "LOT ID",
@@ -72,22 +33,38 @@ const IssueTemplate = () => {
 
     const dataToText = (data) => {
         let stringList = [];
-        stringList.push("설비부동내용 보고\n");
+        stringList.push("⚠️ 설비 부동 내용 보고 ⚠️\n");
+        
+        // Add Equipment
+        const equipment = data.equipment || "N/A";
+        stringList.push(`설비명: ${TextToUnicodeConverter.issueConverter(equipment)}`);
 
-        // Format time range
-        if (data.start_time || data.end_time) {
-            const start = formatDateTime(data.start_time);
+        // Add Issue Type
+        const issueType = data.issue_type || "N/A";
+        stringList.push(`발생 구분: ${TextToUnicodeConverter.issueConverter(issueType)}`);
+
+
+        // Add Lot ID
+        const lotId = data.lotid || "N/A";
+        stringList.push(`LOT ID: ${TextToUnicodeConverter.issueConverter(lotId)}`);
+
+        // Add time range
+        const start = formatDateTime(data.start_time);
             const end = formatDateTime(data.end_time);
-            stringList.push(`time :\n-> ${start} ~ ${end}`);
-        }
+            stringList.push(`시간 ${TextToUnicodeConverter.issueConverter(start + " ~ " + end)}`);
+        
+        // Add HMI Alarm Name
+        const hmiAlarmName = data.hmi_alarm_name || "N/A";
+        stringList.push(`HMI 알람명: ${TextToUnicodeConverter.issueConverter(hmiAlarmName)}`);
 
-        // Add other fields except start_time and end_time
-        for (const [key, value] of Object.entries(data)) {
-            if (!value) continue;
-            if (key === "start_time" || key === "end_time") continue;
-            const displayKey = keyNameMap[key] || key;
-            stringList.push(`${displayKey}: ${TextToUnicodeConverter.issueConverter(value)}`);
-        }
+        // Add Issue
+        const issueText = data.issue || "N/A";
+        stringList.push(`현상: ${TextToUnicodeConverter.issueConverter(issueText)}`);
+
+        // Add Solution
+        const solutionText = data.solution || "N/A";
+        stringList.push(`조치내용: ${TextToUnicodeConverter.issueConverter(solutionText)}`);
+
         return stringList.join("\n");
     }
 
@@ -98,11 +75,10 @@ const IssueTemplate = () => {
 
     return (
         <div className="p-4">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Issue Template</h1>
-            <IssueBox issue={issue} />
-            <div className="text-gray-600 mb-4"></div>
-            {/* <IssueForm issue={issue} setIssue={setIssue} /> */}
-            <DynamicForm schema={exampleSchema} onSubmit={handleFormSubmit} />
+            <div className="w-full flex flex-row gap-4 mb-4 items-center justify-center">
+                <DynamicForm schema={visionIssueSchema} onSubmit={handleFormSubmit} />
+            </div>
+            
             <PopupExample isOpen={popupOpen} setIsOpen={setPopupOpen} textToCopy={popupText} />
         </div>
     );

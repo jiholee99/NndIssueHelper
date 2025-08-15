@@ -47,7 +47,7 @@ function App() {
         <Navbar />
         <div className='mt-20'>
           <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<IssueTemplate />} />
           <Route path="/issueTemplate" element={<IssueTemplate/>} />
           <Route path="/services" element={<Services />} />
           <Route path="/contact" element={<Contact />} />

@@ -32,40 +32,60 @@ const IssueTemplate = () => {
     const [popupText, setPopupText] = useState("");
 
     const dataToText = (data) => {
+        
         let stringList = [];
-        stringList.push("⚠️ 설비 부동 내용 보고 ⚠️\n");
+        stringList.push("[설비 부동 내용 보고]\n\n");
         
         // Add Equipment
         const equipment = data.equipment || "N/A";
-        stringList.push(`설비명: ${TextToUnicodeConverter.issueConverter(equipment)}`);
+        stringList.push(`설비명: ${TextToUnicodeConverter.issueConverter(equipment)}\n`);
 
         // Add Issue Type
         const issueType = data.issue_type || "N/A";
-        stringList.push(`발생 구분: ${TextToUnicodeConverter.issueConverter(issueType)}`);
+        stringList.push(`발생 구분: ${TextToUnicodeConverter.issueConverter(issueType)}\n`);
 
 
         // Add Lot ID
         const lotId = data.lotid || "N/A";
-        stringList.push(`LOT ID: ${TextToUnicodeConverter.issueConverter(lotId)}`);
+        stringList.push(`LOT ID: ${TextToUnicodeConverter.issueConverter(lotId)}\n`);
 
         // Add time range
         const start = formatDateTime(data.start_time);
             const end = formatDateTime(data.end_time);
-            stringList.push(`시간 ${TextToUnicodeConverter.issueConverter(start + " ~ " + end)}`);
+            stringList.push(`시간: ${TextToUnicodeConverter.issueConverter(start + " ~ " + end)}\n`);
         
         // Add HMI Alarm Name
         const hmiAlarmName = data.hmi_alarm_name || "N/A";
-        stringList.push(`HMI 알람명: ${TextToUnicodeConverter.issueConverter(hmiAlarmName)}`);
+        stringList.push(`HMI 알람명:  ${TextToUnicodeConverter.issueConverter(hmiAlarmName)}\n\n`);
 
         // Add Issue
-        const issueText = data.issue || "N/A";
-        stringList.push(`현상: ${TextToUnicodeConverter.issueConverter(issueText)}`);
+        const issueText = data.issue || "";
+        stringList.push("현상:");
+        for (const line of issueText)
+            if (line.trim() !== "") {
+                stringList.push(`${TextToUnicodeConverter.issueConverter(line)}`);
+            }
+        stringList.push("\n\n");
 
         // Add Solution
-        const solutionText = data.solution || "N/A";
-        stringList.push(`조치내용: ${TextToUnicodeConverter.issueConverter(solutionText)}`);
+        const solutionText = data.solution || "";
+        stringList.push("부동 위치:");
+        for (const line of solutionText)
+            if (line.trim() !== "") {
+                stringList.push(`${TextToUnicodeConverter.issueConverter(line)}`);
+            }
+        stringList.push("\n\n");
 
-        return stringList.join("\n");
+        // // issue_location handling
+        // const issueLocation = data.issue_location || "";
+        // stringList.push("부동 위치:");
+        // for (const line of issueLocation)
+        //     if (line.trim() !== "") {
+        //         stringList.push(`${TextToUnicodeConverter.issueConverter(line)}`);
+        //     }
+        // stringList.push("\n\n");
+
+        return stringList.join("");
     }
 
     const handleFormSubmit = (data) => {

@@ -13,7 +13,7 @@ export default function PopupExample({ isOpen, setIsOpen, textToCopy }) {
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="rounded-xl bg-white p-6 shadow-lg w-full max-w-sm">
+      <div className="rounded-xl bg-white p-6 shadow-lg w-full max-w-sm max-h-[90vh] overflow-y-auto">
         <h2 className="text-lg font-semibold">Share this link</h2>
         <pre className="mt-2 break-all text-sm text-gray-700 whitespace-pre-wrap">{textToCopy}</pre>
 

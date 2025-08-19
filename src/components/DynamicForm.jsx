@@ -65,6 +65,76 @@ function CustomSelect({ id, value, options, onChange, placeholder, required, lab
   );
 }
 
+function MultiLineListInput({ id, value = [], onChange, label, placeholder, required }) {
+  const [lines, setLines] = useState(value.length ? value : [""]);
+
+  useEffect(() => {
+    onChange(lines.filter(line => line.trim() !== ""));
+    // eslint-disable-next-line
+  }, [lines]);
+
+  const handleLineChange = (idx, val) => {
+    setLines(prev => prev.map((line, i) => (i === idx ? val : line)));
+  };
+
+  const handleAddLine = () => {
+    setLines(prev => [...prev, ""]);
+  };
+
+  const handleRemoveLine = idx => {
+    setLines(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  return (
+    <div>
+      <label className="block text-sm font-medium">
+        {label}
+        {required && <span className="text-red-500 ml-1">*</span>}
+      </label>
+      {lines.map((line, idx) => (
+        <div key={idx} className="flex items-start gap-2 mt-1 mb-4">
+          <textarea
+            className="w-full rounded-lg border px-3 py-2 resize-none "
+            rows={1}
+            value={line}
+            placeholder={placeholder}
+            style={{ minHeight: "2.5rem", maxHeight: "200px", overflow: "hidden" }}
+            onChange={e => {
+              handleLineChange(idx, e.target.value);
+              // Auto-grow
+              e.target.style.height = "2.5rem";
+              e.target.style.height = `${e.target.scrollHeight}px`;
+            }}
+            required={required && lines.length === 1}
+            onInput={e => {
+              // Auto-grow on paste or manual resize
+              e.target.style.height = "2.5rem";
+              e.target.style.height = `${e.target.scrollHeight}px`;
+            }}
+          />
+          <div className="flex flex-row gap-1 ml-2">
+            <button
+              type="button"
+              className="px-2 py-1 rounded bg-blue-500 text-white hover:bg-blue-600"
+              onClick={handleAddLine}
+              title="Add line"
+              style={{ minWidth: "2rem" }}
+            >+</button>
+            <button
+              type="button"
+              className="px-2 py-1 rounded bg-red-500 text-white hover:bg-red-600"
+              onClick={() => handleRemoveLine(idx)}
+              disabled={lines.length === 1}
+              title="Delete line"
+              style={{ minWidth: "2rem" }}
+            >-</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function DynamicForm({ schema, onSubmit, initialValues, variant = "solid" }) {
   // Helper to get current datetime-local string (YYYY-MM-DDTHH:mm)
   const getNowString = () => {
@@ -185,6 +255,17 @@ export function DynamicForm({ schema, onSubmit, initialValues, variant = "solid"
                   onChange={e => handleChange(f.id, e.target.value)}
                 />
               </>
+            )}
+
+            {f.type === "multiline-list" && (
+              <MultiLineListInput
+                id={f.id}
+                value={values[f.id]}
+                onChange={val => handleChange(f.id, val)}
+                label={f.label}
+                placeholder={f.placeholder}
+                required={f.required}
+              />
             )}
           </div>
         ))}

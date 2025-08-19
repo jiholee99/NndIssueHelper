@@ -37,13 +37,13 @@ const visionIssueSchema = {
 
         // Text Fields
         { id: "hmi_alarm_name", label: "HMI 알람명", type: "text", required: false, placeholder: "알람명을 기입해주세요" },
-        { id: "issue", label: "현상", type: "textarea", required: true, placeholder: "현상을 기입해주세요" },
+        { id: "issue", label: "현상", type: "multiline-list", required: true, placeholder: "현상을 기입해주세요" },
 
-        { id: "solution", label: "조치내용", type: "textarea", required: true, placeholder: "조치내용을 기입해주세요" },
+        { id: "solution", label: "조치내용", type: "multiline-list", required: true, placeholder: "조치내용을 기입해주세요" },
 
         { id: "lotid", label: "Lot ID", type: "text", required: false, placeholder: "Lot ID를 기입해주세요" },
         
-    
+        // { id: "issue_location", label: "부동 위치", type: "multiline-list", required: false, placeholder: "부동 위치를 기입해주세요" },
         
     ]
 };
